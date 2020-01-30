@@ -1,4 +1,11 @@
-const webServer = require('./services/web-server.js')
+const webServer = require('./services/web-server.js');
+const dbConfig = require('./config/database.js');
+const database = require('./services/database.js');
+
+const defaultThreadPoolSize = 4;
+
+process.env.UV_THEREADPOOL_SIZE = dbConfig.hrPool.poolMax + defaultThreadPoolSize;
+
 
 async function startUp() {
     console.log('Starting Application');
@@ -8,7 +15,15 @@ async function startUp() {
         await webServer.initialize();
     } catch (err) {
         console.error(err);
+        process.exit(1);
+    }
 
+    try {
+        console.log('Initializing database module');
+
+        await database.initialize();
+    } catch (err) {
+        console.error(err);
         process.exit(1);
     }
 }
@@ -52,4 +67,4 @@ process.on('uncaughtException', err => {
     console.log('Received uncaught exception');
     console.error(err);
     shutDown(err);
-})
+});
