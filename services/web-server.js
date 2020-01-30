@@ -1,6 +1,7 @@
 const http = require('http');
 const express = require('express');
-const webServerConfig = require('../config/web-server')
+const webServerConfig = require('../config/web-server');
+const morgan = require('morgan');
 
 let httpServer;
 
@@ -9,6 +10,7 @@ function initialize() {
         const app = express();
         httpServer = http.createServer(app);
 
+        app.use(morgan('combined'))
         app.get('/', (req, res) => {
             res.end('Hello World!');
         });
